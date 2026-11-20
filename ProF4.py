@@ -139,3 +139,46 @@ class AsesoriaEspecializada(Servicio):
         print("Servicio:", self.nombre)
         print("Precio:", self.precio)
         print("Especialidad:", self.especialidad)
+
+# =====================================
+# CLASE RESERVA
+# =====================================
+
+class Reserva:
+
+    def __init__(self, cliente, servicio, fecha):
+
+        # Verificar que el cliente y el servicio existan
+        if cliente is None or servicio is None:
+            raise ReservaInvalidaError("El cliente y el servicio son obligatorios")
+
+        # Verificar disponibilidad
+        if not servicio.consultar_disponibilidad():
+            raise ServicioNoDisponibleError("El servicio no esta disponible")
+
+        # Guardar los datos de la reserva
+        self.cliente = cliente
+        self.servicio = servicio
+        self.fecha = fecha
+        self.estado = "Activa"
+
+        # Marcar el servicio como no disponible
+        servicio.disponible = False
+
+    # Mostrar informacion de la reserva
+    def mostrar_reserva(self):
+        print("Cliente:", self.cliente.nombre)
+        print("Servicio:", self.servicio.nombre)
+        print("Fecha:", self.fecha)
+        print("Estado:", self.estado)
+
+    # Cancelar reserva
+    def cancelar_reserva(self):
+
+        if self.estado == "Cancelada":
+            raise OperacionNoPermitidaError("La reserva ya fue cancelada")
+
+        self.estado = "Cancelada"
+        self.servicio.disponible = True
+
+        print("La reserva fue cancelada correctamente")
