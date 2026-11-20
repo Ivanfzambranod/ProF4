@@ -1,3 +1,4 @@
+
 # =====================================
 # PROYECTO FASE 4 - SOFTWARE FJ
 # Sistema de clientes, servicios y reservas
@@ -8,31 +9,31 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 import logging
 
+
 # =====================================
 # EXCEPCIONES PERSONALIZADAS
 # =====================================
 
-# Error cuando un dato no es valido
 class DatoInvalidoError(Exception):
     pass
 
-# Error cuando un servicio no esta disponible
+
 class ServicioNoDisponibleError(Exception):
     pass
 
-# Error cuando una reserva no es valida
+
 class ReservaInvalidaError(Exception):
     pass
 
-# Error cuando una operacion no esta permitida
+
 class OperacionNoPermitidaError(Exception):
     pass
+
 
 # =====================================
 # CLASE ENTIDAD
 # =====================================
 
-# Clase abstracta que representa una entidad
 class Entidad(ABC):
 
     def __init__(self, nombre):
@@ -41,6 +42,7 @@ class Entidad(ABC):
     @abstractmethod
     def mostrar_informacion(self):
         pass
+
 
 # =====================================
 # CLASE CLIENTE
@@ -54,26 +56,23 @@ class Cliente(Entidad):
         self.__documento = documento
         self.__correo = correo
 
-        # Validar los datos del cliente
         if documento == "":
             raise DatoInvalidoError("El documento es obligatorio")
 
         if "@" not in correo:
             raise DatoInvalidoError("El correo no es valido")
 
-    # Consultar documento
     def obtener_documento(self):
         return self.__documento
 
-    # Consultar correo
     def obtener_correo(self):
         return self.__correo
 
-    # Mostrar informacion del cliente
     def mostrar_informacion(self):
         print("Nombre:", self.nombre)
         print("Documento:", self.__documento)
         print("Correo:", self.__correo)
+
 
 # =====================================
 # CLASE SERVICIO
@@ -84,16 +83,15 @@ class Servicio(Entidad):
     def __init__(self, nombre, precio):
         super().__init__(nombre)
 
-        # Validar el precio
         if precio <= 0:
             raise DatoInvalidoError("El precio debe ser mayor que cero")
 
         self.precio = precio
         self.disponible = True
 
-    # Consultar disponibilidad
     def consultar_disponibilidad(self):
         return self.disponible
+
 
 # =====================================
 # SERVICIO DE RESERVA DE SALAS
@@ -110,6 +108,7 @@ class ReservaSala(Servicio):
         print("Precio:", self.precio)
         print("Capacidad:", self.capacidad, "personas")
 
+
 # =====================================
 # SERVICIO DE ALQUILER DE EQUIPOS
 # =====================================
@@ -124,6 +123,7 @@ class AlquilerEquipo(Servicio):
         print("Servicio:", self.nombre)
         print("Precio:", self.precio)
         print("Tipo de equipo:", self.tipo_equipo)
+
 
 # =====================================
 # SERVICIO DE ASESORIAS
@@ -140,6 +140,7 @@ class AsesoriaEspecializada(Servicio):
         print("Precio:", self.precio)
         print("Especialidad:", self.especialidad)
 
+
 # =====================================
 # CLASE RESERVA
 # =====================================
@@ -148,37 +149,103 @@ class Reserva:
 
     def __init__(self, cliente, servicio, fecha):
 
-        # Verificar que el cliente y el servicio existan
         if cliente is None or servicio is None:
-            raise ReservaInvalidaError("El cliente y el servicio son obligatorios")
+            raise ReservaInvalidaError(
+                "El cliente y el servicio son obligatorios"
+            )
 
-        # Verificar disponibilidad
         if not servicio.consultar_disponibilidad():
-            raise ServicioNoDisponibleError("El servicio no esta disponible")
+            raise ServicioNoDisponibleError(
+                "El servicio no esta disponible"
+            )
 
-        # Guardar los datos de la reserva
         self.cliente = cliente
         self.servicio = servicio
         self.fecha = fecha
         self.estado = "Activa"
 
-        # Marcar el servicio como no disponible
         servicio.disponible = False
 
-    # Mostrar informacion de la reserva
     def mostrar_reserva(self):
         print("Cliente:", self.cliente.nombre)
         print("Servicio:", self.servicio.nombre)
         print("Fecha:", self.fecha)
         print("Estado:", self.estado)
 
-    # Cancelar reserva
     def cancelar_reserva(self):
 
         if self.estado == "Cancelada":
-            raise OperacionNoPermitidaError("La reserva ya fue cancelada")
+            raise OperacionNoPermitidaError(
+                "La reserva ya fue cancelada"
+            )
 
         self.estado = "Cancelada"
         self.servicio.disponible = True
 
         print("La reserva fue cancelada correctamente")
+
+
+# =====================================
+# CLASE SISTEMA
+# =====================================
+
+class Sistema:
+
+    def __init__(self):
+        self.clientes = []
+        self.servicios = []
+        self.reservas = []
+
+    # Registrar un cliente
+    def registrar_cliente(self, cliente):
+
+        if not isinstance(cliente, Cliente):
+            raise DatoInvalidoError(
+                "El dato ingresado no es un cliente"
+            )
+
+        for c in self.clientes:
+            if c.obtener_documento() == cliente.obtener_documento():
+                raise DatoInvalidoError(
+                    "El cliente ya esta registrado"
+                )
+
+        self.clientes.append(cliente)
+        print("Cliente registrado correctamente")
+
+    # Registrar un servicio
+    def registrar_servicio(self, servicio):
+
+        if not isinstance(servicio, Servicio):
+            raise DatoInvalidoError(
+                "El dato ingresado no es un servicio"
+            )
+
+        self.servicios.append(servicio)
+        print("Servicio registrado correctamente")
+
+    # Registrar una reserva
+    def registrar_reserva(self, reserva):
+
+        if not isinstance(reserva, Reserva):
+            raise ReservaInvalidaError(
+                "El dato ingresado no es una reserva"
+            )
+
+        self.reservas.append(reserva)
+        print("Reserva registrada correctamente")
+
+    # Mostrar los clientes
+    def mostrar_clientes(self):
+        for cliente in self.clientes:
+            cliente.mostrar_informacion()
+
+    # Mostrar los servicios
+    def mostrar_servicios(self):
+        for servicio in self.servicios:
+            servicio.mostrar_informacion()
+
+    # Mostrar las reservas
+    def mostrar_reservas(self):
+        for reserva in self.reservas:
+            reserva.mostrar_reserva()
