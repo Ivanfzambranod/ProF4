@@ -32,8 +32,10 @@ Implementar una aplicación que permita gestionar clientes, registrar servicios,
 - `README.md`: documentación del proyecto.
 
 ## Integrantes
-MARTHA ZULINDA CUBIDES ZULUAGA 
-GUISSEL VALERIA ORTIZ PAPAMIJA
+MARTHA ZULINDA CUBIDES ZULUAGA,  
+
+GUISSEL VALERIA ORTIZ PAPAMIJA,
+
 IVAN FELIPE ZAMBRANO DUARTE
 
 
